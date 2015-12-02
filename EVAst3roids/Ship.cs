@@ -20,12 +20,18 @@ namespace EVAst3roids
         public static readonly int Radius = 10;
         static readonly int MaxThrust = 15;
         static readonly int ThrustDuration = 2000; // ms
+        static readonly int FireDelay = 750; // ms
         int _thrustTime = 0;
+        int _fireTimer = 0;
         SmokeParticleSystem _sps;
+        BulletParticleSystem _bps;
 
-        public Ship(Point pos, SmokeParticleSystem sps)
+        public Ship(Point pos, 
+            BulletParticleSystem bps,
+            SmokeParticleSystem sps)
         {
             _sps = sps;
+            _bps = bps;
             _position = new Point(Mathi.FixedScale * pos.X, Mathi.FixedScale * pos.Y); ;
             UpdateGeometry();
         }
@@ -39,17 +45,23 @@ namespace EVAst3roids
             }
         }
 
-        public void Input(int angle, bool thrust)
+        public void Input(int angle, bool thrust, bool fire)
         {
             Angle = angle + 90; // tip of ship is pointing "up"
             if (thrust)
             {
                 _thrustTime = ThrustDuration;                
             }
+            if (fire && _fireTimer >= FireDelay)
+            {
+                _fireTimer = 0;
+                _bps.Add(new Bullet(TipPosition, Angle));
+            }
         }
 
         public void Update(int dt)
         {
+            _fireTimer += dt;
             _thrustTime -= dt;
             int thrust = 0;
             if (_thrustTime > 0 )
@@ -62,9 +74,6 @@ namespace EVAst3roids
 
             _position.X += (dt * _velocity.X) / 1000;
             _position.Y -= (dt * _velocity.Y) / 1000;
-
-            _position.X %= (178 * Mathi.FixedScale);
-            _position.Y %= (128 * Mathi.FixedScale);
 
             UpdateGeometry();
 

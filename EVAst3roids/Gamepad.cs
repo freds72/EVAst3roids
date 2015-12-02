@@ -14,11 +14,16 @@ namespace EVAst3roids
         Motor _motorA;
         EV3TouchSensor _touch;
         ButtonEvents _buttons = new ButtonEvents();
+        private static readonly int LongPressDuration = 2000; // ms
 
         int _angle = 0;
+        bool _wasPressed = false;
         bool _pressed = false;
+        bool _pressLong = false;
         bool _rightPressed = false;
-        bool _leftPressed = false;  
+        bool _leftPressed = false;
+        int _touchDuration = 0;
+        bool _enterButtonPressed = false;
 
         public Gamepad()
         {
@@ -32,16 +37,43 @@ namespace EVAst3roids
             _buttons.RightReleased += () => { _rightPressed = false; };
             _buttons.LeftPressed += () => { _leftPressed = true; };
             _buttons.LeftReleased += () => { _leftPressed = false; };
-            _buttons.EnterPressed += () => { _pressed = true; };
-            _buttons.EnterReleased += () => { _pressed = false; };
+            _buttons.EnterPressed += () => {
+                _enterButtonPressed = true; 
+            };
+            _buttons.EnterReleased += () => {
+                _enterButtonPressed = false; 
+            };
+        }
+
+        void UpdatePressedState(int dt, bool isPressed)
+        {
+            if (isPressed) // button pressed
+            {
+                _touchDuration += dt;
+            }
+            else if (_wasPressed != isPressed) // button released
+            {
+                _pressLong = _touchDuration >= LongPressDuration; // ms
+                _touchDuration = 0;
+                _pressed = true;
+            }
+            else // nothing...
+            {
+                _touchDuration = 0;
+                _pressed = false;
+            }
+            _wasPressed = isPressed;
         }
 
         public void Update(int dt)
         {
             if ( _motorA != null )
                 _angle = -_motorA.GetTachoCount();
-            if ( _touch != null )
-                _pressed = _touch.IsPressed();
+            if (_touch != null)
+                UpdatePressedState(dt, _touch.IsPressed());
+            else
+                UpdatePressedState(dt, _enterButtonPressed);
+
             if (_rightPressed)
                 _angle--;
             if (_leftPressed)
@@ -52,6 +84,9 @@ namespace EVAst3roids
         {
             get { return _angle; }
         }
+        // normal/short press
         public bool IsPressed { get { return _pressed; } }
+        // long press
+        public bool IsPressedLong { get { return _pressLong; } }
     }
 }

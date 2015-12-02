@@ -49,15 +49,15 @@ namespace EVAst3roids
 
             Fps fps = new Fps();
 
-            int acc = 0;
             BulletParticleSystem bps = new BulletParticleSystem(50);
             SmokeParticleSystem sps = new SmokeParticleSystem();
             AsteroidParticleSystem aps = new AsteroidParticleSystem();
+            List<Point> collisions = new List<Point>(32); // estimated, max 32 collisions
             // spawn asteroids
             for (int i = 0; i < 4; i++)
                 aps.Add(Asteroid.Size.Large);
 
-            Ship ship = new Ship(center, sps);
+            Ship ship = new Ship(center, bps, sps);
 
             Lcd.IsWrapMode = true;
             while (run)
@@ -66,21 +66,22 @@ namespace EVAst3roids
                 input.Update(fps.ElaspedMilliseconds);
 
                 // dispatch inputs
-                ship.Input(input.Angle, input.IsPressed);
+                ship.Input(input.Angle, input.IsPressedLong, input.IsPressed);
 
                 // update game state
                 ship.Update(fps.ElaspedMilliseconds);
-                acc += fps.ElaspedMilliseconds;
-                if (acc >= 750)
-                {
-                    acc = 0;
-                    bps.Add(new Bullet(ship.TipPosition, ship.Angle));
-                }
 
                 bps.Update(fps.ElaspedMilliseconds);
                 sps.Update(fps.ElaspedMilliseconds);
                 aps.Update(fps.ElaspedMilliseconds);
                 fps.Update();
+
+                aps.ResolveCollision(bps, collisions);
+                foreach(Point it in collisions)
+                {
+                    sps.Add(it);
+                }
+                collisions.Clear();
 
                 Lcd.Clear();
 

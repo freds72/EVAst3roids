@@ -27,5 +27,21 @@ namespace EVAst3roids
         {
             Renderer.DrawGeometry(particle.Geometry, true);
         }
+
+        public void ResolveCollision<T>(ParticleSystem<T> particles, List<Point> collisions) where T:struct, IParticle
+        {
+            int n = ActiveParticles;
+            for (int i = 0; i < n; i++)
+            {
+                int N = particles.ActiveParticles;
+                for (int k = 0; k < N; k++)
+                {
+                    if (Particles[i].Collide(particles.Particles[k].Position))
+                    {
+                        collisions.Add(particles.Particles[k].Position);
+                    }
+                }
+            }
+        }
     }
 }

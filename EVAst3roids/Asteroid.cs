@@ -27,6 +27,7 @@ namespace EVAst3roids
         int _momentum;
         int _angle;
         Size _size;
+        bool _isAlive;
 
         public Asteroid(Point pos, int angle, Size size)
         {
@@ -38,6 +39,7 @@ namespace EVAst3roids
             _radius = new int[8];
             for (int i = 0; i < _radius.Length; i++)
                 _radius[i] = rnd.Next(MinRadius[(int)size], MaxRadius[(int)size]);
+            _isAlive = true;
 
             //
             _geometry = new Point[8];
@@ -57,7 +59,7 @@ namespace EVAst3roids
 
         public bool IsAlive
         {
-            get { return true; }
+            get { return _isAlive; }
         }
 
         public void Update(int dt)
@@ -67,10 +69,21 @@ namespace EVAst3roids
             _position.X += (dt * _direction.X * MaxVelocity) / 1000;
             _position.Y -= (dt * _direction.Y * MaxVelocity) / 1000;
 
-            _position.X %= (178 * Mathi.FixedScale);
-            _position.Y %= (128 * Mathi.FixedScale);
-
             UpdateGeometry();
+        }
+
+        public bool Collide(Point p)
+        {
+            Point center = Position;
+            int dx = (p.X - center.X);
+            int dy = (p.Y - center.Y);
+            int radius = MinRadius[(int)_size];
+            if (dx * dx + dy * dy < (radius * radius))
+            {
+                _isAlive = false;
+                return true;
+            }
+            return false;
         }
 
         public Point[] Geometry
