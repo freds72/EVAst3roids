@@ -1,102 +1,65 @@
-﻿using System;
+using System;
 using System.Threading;
 using MonoBrickFirmware.Display;
 using MonoBrickFirmware.UserInput;
 using System.Collections.Generic;
 using System.IO;
+using System.Net.Sockets;
+using System.Net;
 
 namespace EVAst3roids
 {
     class Program
     {
-        static int _line = 0;
-        static void Log(string log)
-        {
-            Lcd.WriteText(Font.SmallFont, new Point(0, _line), log, true);
-            Lcd.Update();
-            _line += (int)Font.SmallFont.maxHeight;
-            if (_line > Lcd.Height)
-            {
-                Lcd.Clear();
-                _line = 0;
-            }
-        }
-
         static void Main(string[] args)
         {
-            EventWaitHandle stopped = new ManualResetEvent(false);
-            Point center = new Point(Lcd.Width / 2, Lcd.Height / 2);
-            int refreshRate = 16;
-            bool run = true;
+            Thread.CurrentThread.CurrentCulture = System.Globalization.CultureInfo.InvariantCulture;
+            Thread.CurrentThread.CurrentUICulture = System.Globalization.CultureInfo.InstalledUICulture;
 
-            ButtonEvents buts = new ButtonEvents();
-            Gamepad input = new Gamepad();
-            buts.EscapePressed += () =>
+            try
             {
-                stopped.Set();
-                run = false;
-            };
-            buts.UpReleased += () =>
-                {
-                    refreshRate++;
-                };
-            buts.DownReleased += () =>
-                {
-                    refreshRate--;
-                    if (refreshRate < 0)
-                        refreshRate = 0;
-                };
-
-            Fps fps = new Fps();
-
-            BulletParticleSystem bps = new BulletParticleSystem(50);
-            SmokeParticleSystem sps = new SmokeParticleSystem();
-            AsteroidParticleSystem aps = new AsteroidParticleSystem();
-            List<Point> collisions = new List<Point>(32); // estimated, max 32 collisions
-            // spawn asteroids
-            for (int i = 0; i < 4; i++)
-                aps.Add(Asteroid.Size.Large);
-
-            Ship ship = new Ship(center, bps, sps);
-
-            Lcd.IsWrapMode = true;
-            while (run)
+                ThisGame game = new ThisGame();
+                game.Initialize();
+                game.Run();
+            }
+            catch (Exception ex)
             {
-                // collect inputs
-                input.Update(fps.ElaspedMilliseconds);
+#if DEBUG
+                // Set the TcpListener on port 13000.
+                int port = 13000;
 
-                // dispatch inputs
-                ship.Input(input.Angle, input.IsPressedLong, input.IsPressed);
+                // TcpListener server = new TcpListener(port);
+                TcpListener server = new TcpListener(IPAddress.Any, port);
 
-                // update game state
-                ship.Update(fps.ElaspedMilliseconds);
+                // Start listening for client requests.
+                server.Start();
 
-                bps.Update(fps.ElaspedMilliseconds);
-                sps.Update(fps.ElaspedMilliseconds);
-                aps.Update(fps.ElaspedMilliseconds);
-                fps.Update();
+                Logger.Error("Wait debugger");
 
-                aps.ResolveCollision(bps, collisions);
-                foreach(Point it in collisions)
+                // Perform a blocking call to accept requests.
+                // You could also user server.AcceptSocket() here.
+                using (TcpClient client = server.AcceptTcpClient())
                 {
-                    sps.Add(it);
+                    // Get a stream object for reading and writing
+                    NetworkStream stream = client.GetStream();
+
+                    while (ex != null)
+                    {
+                        byte[] msg = System.Text.Encoding.ASCII.GetBytes(ex.Message + "\n");
+                        // Send back a response.
+                        stream.Write(msg, 0, msg.Length);
+
+                        msg = System.Text.Encoding.ASCII.GetBytes(ex.StackTrace + "\n");
+                        // Send back a response.
+                        stream.Write(msg, 0, msg.Length);
+                        ex = ex.InnerException;
+                    }
                 }
-                collisions.Clear();
 
-                Lcd.Clear();
-
-                // draw
-                Renderer.DrawGeometry(ship.Geometry, true);
-                bps.Draw(fps.ElaspedMilliseconds);
-                sps.Draw(fps.ElaspedMilliseconds);
-                aps.Draw(fps.ElaspedMilliseconds);
-
-                Lcd.WriteText(Font.SmallFont, new Point(0, 0), fps.ToString(), true);
-                Lcd.WriteText(Font.SmallFont, new Point(0, (int)Font.SmallFont.maxHeight), "Asteroids: " + aps.ActiveParticles, true);
-                Lcd.Update();
-
-                stopped.WaitOne(refreshRate);
+                // Stop listening for new clients.
+                server.Stop();
             }
         }
+#endif
     }
 }

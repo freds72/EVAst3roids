@@ -42,6 +42,13 @@ namespace EVAst3roids
 	        t--;
             return change * (t * t * t + 1) + start;
         }
+
+        public static int Lerp(int start, int end, int t, int tmax)
+        {
+            // a*(1-dt) + b*dt
+            int dt = (t * FixedScale) / tmax;
+            return (start * (FixedScale - dt) + end * dt) / FixedScale;
+        }
     }
 }
 

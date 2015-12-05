@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using MonoBrickFirmware.Display;
@@ -9,6 +9,7 @@ namespace EVAst3roids
     {
         bool IsAlive { get; }
         Point Position { get; }
-        void Update(int dt);    
+        void Update(int dt);
+        void Hit();
     }
 }

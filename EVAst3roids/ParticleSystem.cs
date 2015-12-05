@@ -10,8 +10,10 @@ namespace EVAst3roids
         T[] _particles;
         int _activeParticles;
         int _maxParticles;
-        public ParticleSystem(int max)
+        protected Game Game { get; private set; }
+        public ParticleSystem(Game game, int max)
         {
+            Game = game;
             _maxParticles = max;
             _activeParticles = 0;
             _particles = new T[max];

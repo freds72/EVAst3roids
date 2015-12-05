@@ -1,4 +1,4 @@
-﻿using MonoBrickFirmware.Display;
+using MonoBrickFirmware.Display;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,8 +9,8 @@ namespace EVAst3roids
     struct Bullet : IParticle
     {
         static readonly Random rnd = new Random();
-        public static readonly int Length = 5;
-        public static readonly int Velocity = 25;
+        public static readonly int Length = 4;
+        public static readonly int Velocity = 75;
 
         Point _position;
         Point[] _geometry;
@@ -22,7 +22,7 @@ namespace EVAst3roids
             _position = new Point(Mathi.FixedScale * pos.X, Mathi.FixedScale * pos.Y);
             _direction = new Point(Mathi.FixedCos(angle), Mathi.FixedSin(angle));
             _geometry = new Point[2];
-            LifeTime = rnd.Next(2500,3000);
+            LifeTime = rnd.Next(3500,4000);
         }
 
         public bool IsAlive
@@ -59,6 +59,11 @@ namespace EVAst3roids
         public Point Position
         {
             get { return _geometry[0]; }
+        }
+        
+        public void Hit()
+        {
+        	LifeTime = 0;
         }
     }
 }

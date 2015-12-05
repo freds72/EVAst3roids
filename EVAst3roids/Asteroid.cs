@@ -1,4 +1,4 @@
-﻿using MonoBrickFirmware.Display;
+using MonoBrickFirmware.Display;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,30 +16,34 @@ namespace EVAst3roids
         }
 
         static readonly Random rnd = new Random();
-        public static readonly int[] MinRadius = new int[]{8,12,18};
-        public static readonly int[] MaxRadius = new int[] { 10, 20, 30 };
-        public static readonly int MaxVelocity = 1;
+        public static readonly int[] MinRadius = new int[] { 6, 12, 22};
+        public static readonly int[] MaxRadius = new int[] { 8, 15, 30 };
+        public static readonly int[] MinHP = new int[]{ 1, 3, 5 };
 
         Point _position;
         Point _direction;
         Point[] _geometry;
         int[] _radius;
         int _momentum;
+        int _velocity;
         int _angle;
-        Size _size;
-        bool _isAlive;
+        int _hp;
+        int _size;
 
-        public Asteroid(Point pos, int angle, Size size)
+        public int Radius { get { return _size; } }
+
+        public Asteroid(Point pos, int angle, int size)
         {
             _position = new Point(Mathi.FixedScale * pos.X, Mathi.FixedScale * pos.Y);
             _direction = new Point(Mathi.FixedCos(angle), Mathi.FixedSin(angle));
             _size = size;
-            _momentum = rnd.Next(-10, 10); // deg/sec
+            _momentum = rnd.Next(-20, 20); // deg/sec
+            _velocity = rnd.Next(5, 10);
             _angle = rnd.Next(0, 360);
             _radius = new int[8];
             for (int i = 0; i < _radius.Length; i++)
                 _radius[i] = rnd.Next(MinRadius[(int)size], MaxRadius[(int)size]);
-            _isAlive = true;
+            _hp = MinHP[(int)size];
 
             //
             _geometry = new Point[8];
@@ -59,30 +63,30 @@ namespace EVAst3roids
 
         public bool IsAlive
         {
-            get { return _isAlive; }
+            get { return _hp > 0; }
         }
 
         public void Update(int dt)
         {
             _angle += (dt * _momentum) / 1000;
 
-            _position.X += (dt * _direction.X * MaxVelocity) / 1000;
-            _position.Y -= (dt * _direction.Y * MaxVelocity) / 1000;
+            _position.X += (dt * _direction.X * _velocity) / 1000;
+            _position.Y -= (dt * _direction.Y * _velocity) / 1000;
 
             UpdateGeometry();
         }
 
         public bool Collide(Point p)
         {
+        	if (!IsAlive)
+        		return false;
             Point center = Position;
             int dx = (p.X - center.X);
             int dy = (p.Y - center.Y);
             int radius = MinRadius[(int)_size];
             if (dx * dx + dy * dy < (radius * radius))
-            {
-                _isAlive = false;
                 return true;
-            }
+
             return false;
         }
 
@@ -97,6 +101,11 @@ namespace EVAst3roids
         public Point Position
         {
             get { return new Point(_position.X / Mathi.FixedScale, _position.Y / Mathi.FixedScale); }
+        }
+        
+        public void Hit()
+        {
+        	_hp -= 1;
         }
     }
 }

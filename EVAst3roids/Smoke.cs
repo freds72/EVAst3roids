@@ -1,4 +1,4 @@
-﻿using MonoBrickFirmware.Display;
+using MonoBrickFirmware.Display;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -48,6 +48,10 @@ namespace EVAst3roids
         public Point Position
         {
             get { return _geometry[0]; }
+        }
+        
+        public void Hit()
+        {
         }
     }
 }

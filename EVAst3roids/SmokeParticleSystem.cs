@@ -8,9 +8,10 @@ namespace EVAst3roids
 {
     class SmokeParticleSystem : ParticleSystem<Smoke>
     {
-        public SmokeParticleSystem():
-            base(256)
-        { 
+        public SmokeParticleSystem(Game game):
+            base(game, 256)
+        {
+            game.Services.Register(this);
         }
 
         public void Add(Point pos)

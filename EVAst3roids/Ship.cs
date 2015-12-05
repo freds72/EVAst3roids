@@ -1,4 +1,4 @@
-﻿using MonoBrickFirmware.Display;
+using MonoBrickFirmware.Display;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,18 +20,18 @@ namespace EVAst3roids
         public static readonly int Radius = 10;
         static readonly int MaxThrust = 15;
         static readonly int ThrustDuration = 2000; // ms
-        static readonly int FireDelay = 750; // ms
+        static readonly int ThrustDecayRate = 75; // ms
+
+        static readonly int FireDelay = 500; // ms
         int _thrustTime = 0;
         int _fireTimer = 0;
         SmokeParticleSystem _sps;
         BulletParticleSystem _bps;
 
-        public Ship(Point pos, 
-            BulletParticleSystem bps,
-            SmokeParticleSystem sps)
+        public Ship(Game game, Point pos)
         {
-            _sps = sps;
-            _bps = bps;
+            _bps = game.Services.TryFind<BulletParticleSystem>();
+            _sps = game.Services.TryFind<SmokeParticleSystem>();
             _position = new Point(Mathi.FixedScale * pos.X, Mathi.FixedScale * pos.Y); ;
             UpdateGeometry();
         }
@@ -66,7 +66,7 @@ namespace EVAst3roids
             int thrust = 0;
             if (_thrustTime > 0 )
             {
-                thrust = Mathi.EaseOutCubic(_thrustTime, MaxThrust, -1, ThrustDuration);
+                thrust = Mathi.EaseOutCubic(_thrustTime, MaxThrust, -ThrustDecayRate, ThrustDuration);
             }
 
             _velocity.X = thrust * Mathi.FixedCos(Angle);
@@ -79,7 +79,7 @@ namespace EVAst3roids
 
             if (_thrustTime > 0)
             {
-                if ( (_thrustTime % 2) == 0 )
+                if ( (_thrustTime % 8) == 0 )
                     _sps.Add(EnginePosition);
             }
         }
