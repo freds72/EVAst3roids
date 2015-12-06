@@ -52,6 +52,7 @@
     <Compile Include="Game.cs" />
     <Compile Include="GameServiceContainer.cs" />
     <Compile Include="Gamepad.cs" />
+    <Compile Include="IGhostParticle.cs" />
     <Compile Include="IParticle.cs" />
     <Compile Include="Logger.cs" />
     <Compile Include="Mathi.cs" />

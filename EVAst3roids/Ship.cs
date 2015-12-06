@@ -20,11 +20,11 @@ namespace EVAst3roids
         public static readonly int Radius = 10;
         static readonly int MaxThrust = 15;
         static readonly int ThrustDuration = 2000; // ms
-        static readonly int ThrustDecayRate = 75; // ms
+        static readonly int ThrustDecayRate = 250; // ms
 
-        static readonly int FireDelay = 500; // ms
+        static readonly int FireDelay = 250; // ms
         int _thrustTime = 0;
-        int _fireTimer = 0;
+        int _fireTimer = -1;
         SmokeParticleSystem _sps;
         BulletParticleSystem _bps;
 
@@ -52,16 +52,16 @@ namespace EVAst3roids
             {
                 _thrustTime = ThrustDuration;                
             }
-            if (fire && _fireTimer >= FireDelay)
+            if (fire && _fireTimer < 0)
             {
-                _fireTimer = 0;
+                _fireTimer = FireDelay;
                 _bps.Add(new Bullet(TipPosition, Angle));
             }
         }
 
         public void Update(int dt)
         {
-            _fireTimer += dt;
+            _fireTimer -= dt;
             _thrustTime -= dt;
             int thrust = 0;
             if (_thrustTime > 0 )
@@ -74,6 +74,8 @@ namespace EVAst3roids
 
             _position.X += (dt * _velocity.X) / 1000;
             _position.Y -= (dt * _velocity.Y) / 1000;
+
+            Renderer.Wrap(ref _position);
 
             UpdateGeometry();
 

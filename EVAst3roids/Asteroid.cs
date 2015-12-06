@@ -37,7 +37,7 @@ namespace EVAst3roids
             _position = new Point(Mathi.FixedScale * pos.X, Mathi.FixedScale * pos.Y);
             _direction = new Point(Mathi.FixedCos(angle), Mathi.FixedSin(angle));
             _size = size;
-            _momentum = rnd.Next(-20, 20); // deg/sec
+            _momentum = rnd.Next(-5, 5); // deg/sec
             _velocity = rnd.Next(5, 10);
             _angle = rnd.Next(0, 360);
             _radius = new int[8];
@@ -73,20 +73,41 @@ namespace EVAst3roids
             _position.X += (dt * _direction.X * _velocity) / 1000;
             _position.Y -= (dt * _direction.Y * _velocity) / 1000;
 
+            Renderer.Wrap(ref _position);
+
             UpdateGeometry();
         }
 
-        public bool Collide(Point p)
+        bool Collide(ref Point center, ref Point p)
+        {
+            int dx = (p.X - center.X);
+            int dy = (p.Y - center.Y);
+            int radius = MinRadius[_size];
+            if (dx * dx + dy * dy < (radius * radius))
+                return true;
+            return false;
+        }
+
+        public bool Collide(IParticle other)
         {
         	if (!IsAlive)
         		return false;
             Point center = Position;
-            int dx = (p.X - center.X);
-            int dy = (p.Y - center.Y);
-            int radius = MinRadius[(int)_size];
-            if (dx * dx + dy * dy < (radius * radius))
+            Point p = other.Position;
+            if (Collide(ref center, ref p))
                 return true;
 
+            // check for "ghost" particles
+            IGhostParticle ghost = other as IGhostParticle;
+            if ( ghost != null )
+            {
+                int n = ghost.GhostPositions.Length;
+                for(int i=0;i<n;++i)
+                {
+                    if (Collide(ref center, ref ghost.GhostPositions[i]))
+                        return true;
+                }
+            }
             return false;
         }
 

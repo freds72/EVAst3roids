@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MonoBrickFirmware.Display;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -15,7 +16,14 @@ namespace EVAst3roids
 
         public override void Draw(ref Bullet particle)
         {
-            Renderer.DrawGeometry(particle.Geometry, false);
+            Point a = particle.Position;
+            Point b = a;
+            a.X -= 2;
+            a.Y -= 2;
+            b.X += 2;
+            b.Y += 2;
+
+            Lcd.DrawRectangle(new Rectangle(a, b), true, true);            
         }
     }
 }

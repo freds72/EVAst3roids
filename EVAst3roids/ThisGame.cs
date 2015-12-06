@@ -13,6 +13,7 @@ namespace EVAst3roids
         AsteroidParticleSystem _aps;
         Ship _ship;
         Gamepad _input = new Gamepad();
+        int _burstX = Lcd.Width - Font.SmallFont.TextSize("BURST").X;
 
         public ThisGame()
         {
@@ -66,7 +67,10 @@ namespace EVAst3roids
             _aps.Draw(gameTime.ElapsedGameTime);
 
             Lcd.WriteText(Font.SmallFont, new Point(0, 0), gameTime.ToString(), true);
-            Lcd.WriteText(Font.SmallFont, new Point(0, (int)Font.SmallFont.maxHeight), "Asteroids: " + _aps.ActiveParticles, true);
+
+            if ( _input.IsBeforePressedLong && (gameTime.ElapsedGameTime % 2) == 0 )
+                Lcd.WriteText(Font.SmallFont, new Point(_burstX, 0), "BURST", true);
+
             Lcd.Update();
         }
     }

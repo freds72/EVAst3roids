@@ -73,7 +73,7 @@ namespace EVAst3roids
         
         void ResolveCollision<T>(ref Asteroid me, ref T other) where T:struct, IParticle
         {
-            if (me.Collide(other.Position))
+            if (me.Collide(other))
             {
                 me.Hit();
                 other.Hit();
