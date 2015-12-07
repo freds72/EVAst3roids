@@ -14,8 +14,8 @@ namespace EVAst3roids
         Motor _motorA;
         EV3TouchSensor _touch;
         ButtonEvents _buttons = new ButtonEvents();
-        private static readonly int LongPressDuration = 750; // ms
-
+        public static readonly int LongPressDuration = 750; // ms
+        
         int _angle = 0;
         bool _wasPressed = false;
         bool _pressed = false;
@@ -24,6 +24,8 @@ namespace EVAst3roids
         bool _leftPressed = false;
         int _touchDuration = 0;
         bool _enterButtonPressed = false;
+
+        public int PressDuration { get { return _touchDuration; } }
 
         public Gamepad()
         {

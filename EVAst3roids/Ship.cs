@@ -23,8 +23,10 @@ namespace EVAst3roids
         static readonly int ThrustDecayRate = 250; // ms
 
         static readonly int FireDelay = 250; // ms
+        static readonly int SmokeDelay = 125; // ms
         int _thrustTime = 0;
         int _fireTimer = -1;
+        int _smokeTimer = -1;
         SmokeParticleSystem _sps;
         BulletParticleSystem _bps;
 
@@ -63,6 +65,7 @@ namespace EVAst3roids
         {
             _fireTimer -= dt;
             _thrustTime -= dt;
+            _smokeTimer -= dt;
             int thrust = 0;
             if (_thrustTime > 0 )
             {
@@ -81,8 +84,11 @@ namespace EVAst3roids
 
             if (_thrustTime > 0)
             {
-                if ( (_thrustTime % 8) == 0 )
+                if (_smokeTimer <= 0)
+                {
+                    _smokeTimer = SmokeDelay;
                     _sps.Add(EnginePosition);
+                }
             }
         }
 

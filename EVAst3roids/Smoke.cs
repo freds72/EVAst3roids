@@ -17,12 +17,12 @@ namespace EVAst3roids
         public Smoke(Point p)
         {
             _geometry = new Point[] { new Point(rnd.Next(p.X - 3,p.X+3), rnd.Next(p.Y -3, p.Y + 3)) };
-            LifeTime = rnd.Next(2500, 4500); //ms
+            LifeTime = rnd.Next(1500, 2000); //ms
         }
 
         public int Radius
         {
-            get { return Math.Max(1, (MaxRadius * LifeTime) / 3000); }
+            get { return Math.Max(1, (MaxRadius * LifeTime) / 2000); }
         }
 
         public bool IsAlive

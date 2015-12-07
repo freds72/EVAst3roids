@@ -13,9 +13,11 @@ namespace EVAst3roids
         public readonly MessageDispatcher Dispatcher = new MessageDispatcher();
         ButtonEvents _buttons = new ButtonEvents();
 
-        private GameTime _fps = new GameTime();
-        int _refreshRate = 0;
+        private FPSCounter _fps = new FPSCounter();
+        const int TargetUpdateRate = 1000 / 30;
+        int _refreshRate = 1000 / 30;
         bool _run = true;
+
         public int TargetRefreshRate {
             get
             {
@@ -49,20 +51,28 @@ namespace EVAst3roids
         {
 
         }
-
+        
         public void Run()
         {
             EventWaitHandle stopped = new ManualResetEvent(false);
+            GameTime time = new GameTime(TargetUpdateRate);
+            int accumulator = 0;
             while (_run)
             {
                 _fps.Update();
 
-                Dispatcher.Update();
-                Update(_fps);
+                accumulator += _fps.ElapsedGameTime;
+                while (accumulator >= TargetUpdateRate)
+                {
+                    Dispatcher.Update();
+                    Update(time);
 
-                Draw(_fps);
+                    accumulator -= TargetUpdateRate;
+                    time.Next();
+                }
 
-                stopped.WaitOne(_refreshRate);
+                Draw(time);
+                // stopped.WaitOne(_refreshRate);
             }
         }
 

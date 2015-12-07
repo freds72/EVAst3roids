@@ -48,10 +48,12 @@
     <Compile Include="AsteroidParticleSystem.cs" />
     <Compile Include="Bullet.cs" />
     <Compile Include="BulletParticleSystem.cs" />
-    <Compile Include="GameTime.cs" />
+    <Compile Include="FPSCounter.cs" />
     <Compile Include="Game.cs" />
+    <Compile Include="GameScreen.cs" />
     <Compile Include="GameServiceContainer.cs" />
     <Compile Include="Gamepad.cs" />
+    <Compile Include="GameTime.cs" />
     <Compile Include="IGhostParticle.cs" />
     <Compile Include="IParticle.cs" />
     <Compile Include="Logger.cs" />
@@ -65,6 +67,10 @@
     <Compile Include="Smoke.cs" />
     <Compile Include="SmokeParticleSystem.cs" />
     <Compile Include="ThisGame.cs" />
+    <Compile Include="TitleScreen.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Assets\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
