@@ -1,4 +1,5 @@
-﻿using MonoBrickFirmware.UserInput;
+﻿using MonoBrickFirmware.Display;
+using MonoBrickFirmware.UserInput;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -71,7 +72,7 @@ namespace EVAst3roids
                     time.Next();
                 }
 
-                Draw(time);
+                Draw(time);                
                 // stopped.WaitOne(_refreshRate);
             }
         }

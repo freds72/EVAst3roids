@@ -59,6 +59,7 @@ namespace EVAst3roids
             _aps.ResolveCollision(_bps);
         }
 
+        int _movieTimer = 3000;
         protected override void Draw(GameTime gameTime)
         {
             Lcd.Clear();
@@ -78,6 +79,14 @@ namespace EVAst3roids
                 Lcd.WriteText(Font.SmallFont, new Point(_burstX, 0), "BURST", true);
             
             Lcd.Update();
+
+            /*
+            _movieTimer -= gameTime.ElapsedGameTime;
+            if ( _movieTimer > 0 && (gameTime.TotalGameTime % 8) == 0)
+            {
+                Lcd.TakeScreenShot();
+            }
+             * */
         }
     }
 }
