@@ -28,11 +28,14 @@ namespace EVAst3roids
         int _velocity;
         int _angle;
         int _hp;
-        int _size;
+        Asteroid.Size _size;
 
-        public int Radius { get { return _size; } }
+        /// <summary>
+        /// Returns the asteroid type (0: small, 1: medium, 2: large)
+        /// </summary>
+        public Asteroid.Size Model { get { return _size; } }
 
-        public Asteroid(Point pos, int angle, int size)
+        public Asteroid(Point pos, int angle, Asteroid.Size size)
         {
             _position = new Point(Mathi.FixedScale * pos.X, Mathi.FixedScale * pos.Y);
             _direction = new Point(Mathi.FixedCos(angle), Mathi.FixedSin(angle));
@@ -82,7 +85,7 @@ namespace EVAst3roids
         {
             int dx = (p.X - center.X);
             int dy = (p.Y - center.Y);
-            int radius = MinRadius[_size];
+            int radius = MinRadius[(int)_size];
             if (dx * dx + dy * dy < (radius * radius))
                 return true;
             return false;
@@ -126,7 +129,7 @@ namespace EVAst3roids
         
         public void Hit()
         {
-        	_hp -= 1;
+            _hp = 0;
         }
     }
 }

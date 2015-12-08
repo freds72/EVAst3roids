@@ -46,6 +46,8 @@
   <ItemGroup>
     <Compile Include="Asteroid.cs" />
     <Compile Include="AsteroidParticleSystem.cs" />
+    <Compile Include="Blast.cs" />
+    <Compile Include="BlastParticleSystem.cs" />
     <Compile Include="Bullet.cs" />
     <Compile Include="BulletParticleSystem.cs" />
     <Compile Include="FPSCounter.cs" />

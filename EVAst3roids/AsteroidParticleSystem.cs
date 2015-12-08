@@ -10,12 +10,14 @@ namespace EVAst3roids
     {
         static readonly Random rnd = new Random();
 
-        SmokeParticleSystem _sps;
+        SmokeParticleSystem _smokePS;
+        BlastParticleSystem _blastPS;
         public AsteroidParticleSystem(Game game):
             base(game, 16)
         {
             game.Services.Register(this);
-            _sps = game.Services.TryFind<SmokeParticleSystem>();
+            _smokePS = game.Services.TryFind<SmokeParticleSystem>();
+            _blastPS = game.Services.TryFind<BlastParticleSystem>();
         }
 
         public void Add(Asteroid.Size size)
@@ -24,7 +26,7 @@ namespace EVAst3roids
             int x = Lcd.Width / 2 + (Lcd.Width * Mathi.FixedCos(angle)) / Mathi.FixedScale / 2;
             int y = Lcd.Height /2 - (Lcd.Height * Mathi.FixedSin(angle)) / Mathi.FixedScale / 2;
             angle += 180;
-            base.Add(new Asteroid(new Point(x, y), angle, (int)Asteroid.Size.Large));
+            base.Add(new Asteroid(new Point(x, y), angle, Asteroid.Size.Large));
         }
 
         public override void Draw(ref Asteroid particle)
@@ -34,17 +36,17 @@ namespace EVAst3roids
         
         static readonly int[] MinSplits = new int[]{ 0, 2, 3};
         static readonly int[] MaxSplits = new int[]{ 0, 3, 5};
-        void Split(Point pos, int size)
+        void Split(Point pos, Asteroid.Size size)
         {
             int splitCount = rnd.Next(
-                MinSplits[size],
-                MaxSplits[size]);
+                MinSplits[(int)size],
+                MaxSplits[(int)size]);
             if (splitCount == 0)
                 return;
 
             int angleOffset = rnd.Next(360);
             int angle = 0;
-            int radius = rnd.Next(Asteroid.MinRadius[size],Asteroid.MaxRadius[size]) / 2;
+            int radius = rnd.Next(Asteroid.MinRadius[(int)size],Asteroid.MaxRadius[(int)size]) / 2;
             for (int i = 0; i < splitCount; i++)
             {
                 int x = pos.X + (radius * Mathi.FixedCos(angle + angleOffset)) / Mathi.FixedScale;
@@ -63,7 +65,7 @@ namespace EVAst3roids
                     int x = pos.X + (radius * Mathi.FixedCos(angle + angleOffset)) / Mathi.FixedScale;
                     int y = pos.Y - (radius * Mathi.FixedSin(angle + angleOffset)) / Mathi.FixedScale;
 
-                    _sps.Add(new Point(
+                    _smokePS.Add(new Point(
                         Mathi.Lerp(pos.X, x, i, dustCount),
                         Mathi.Lerp(pos.Y, y, i, dustCount)));
                 }
@@ -80,14 +82,17 @@ namespace EVAst3roids
                 if (!me.IsAlive)
                 {
                     Point pos = me.Position;
-                    int radius = me.Radius;
+                    Asteroid.Size size = me.Model;
                     Game.Dispatcher.Post(() =>
                     {
-                        Split(pos, radius);
+                        int radius = rnd.Next(Asteroid.MinRadius[(int)size], Asteroid.MaxRadius[(int)size]);
+                        _blastPS.Add(pos, size, radius);
+                        Split(pos, size);
                     });
                 }
             }
         }
+
         public void ResolveCollision<T>(ParticleSystem<T> others) where T:struct, IParticle
         {
             int n = ActiveParticles;

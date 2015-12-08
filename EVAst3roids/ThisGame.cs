@@ -11,6 +11,7 @@ namespace EVAst3roids
         BulletParticleSystem _bps;
         SmokeParticleSystem _sps;
         AsteroidParticleSystem _aps;
+        BlastParticleSystem _blastPS;
         Ship _ship;
         Gamepad _input = new Gamepad();
         readonly int _burstWidth;
@@ -30,6 +31,7 @@ namespace EVAst3roids
 
             _bps = new BulletParticleSystem(this, 50);
             _sps = new SmokeParticleSystem(this);
+            _blastPS = new BlastParticleSystem(this);
             _aps = new AsteroidParticleSystem(this);
 
             // spawn asteroids
@@ -54,7 +56,8 @@ namespace EVAst3roids
 
             _bps.Update(gameTime.ElapsedGameTime);
             _sps.Update(gameTime.ElapsedGameTime);
-            _aps.Update(gameTime.ElapsedGameTime);           
+            _aps.Update(gameTime.ElapsedGameTime);
+            _blastPS.Update(gameTime.ElapsedGameTime);           
 
             _aps.ResolveCollision(_bps);
         }
@@ -69,7 +72,8 @@ namespace EVAst3roids
             _bps.Draw(gameTime.ElapsedGameTime);
             _sps.Draw(gameTime.ElapsedGameTime);
             _aps.Draw(gameTime.ElapsedGameTime);
-
+            _blastPS.Draw(gameTime.ElapsedGameTime);
+                      
             Lcd.WriteText(Font.SmallFont, new Point(0, 0), gameTime.ToString(), true);
             
             int burstY = (int)Font.SmallFont.maxHeight/2;            
