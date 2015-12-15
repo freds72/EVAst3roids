@@ -19,6 +19,11 @@ namespace EVAst3roids
             _components.Add(type, component);
         }
 
+        public void Clear()
+        {
+            _components.Clear();
+        }
+
         public T TryFind<T>() where T : class
         {
             object o = null;

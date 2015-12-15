@@ -12,7 +12,6 @@ namespace EVAst3roids
     {
         public readonly GameServiceContainer Services = new GameServiceContainer();
         public readonly MessageDispatcher Dispatcher = new MessageDispatcher();
-        ButtonEvents _buttons = new ButtonEvents();
 
         private FPSCounter _fps = new FPSCounter();
         const int TargetUpdateRate = 1000 / 30;
@@ -32,11 +31,9 @@ namespace EVAst3roids
 
         public Game()
         {
-            _buttons.EscapePressed += () =>
-            {
-                _run = false;
-            };
         }
+
+        public Gamepad Gamepad { get; private set; }
 
         public void Stop()
         {
@@ -50,7 +47,7 @@ namespace EVAst3roids
 
         public virtual void Initialize()
         {
-
+            Gamepad = new Gamepad();
         }
         
         public void Run()
@@ -65,6 +62,9 @@ namespace EVAst3roids
                 accumulator += _fps.ElapsedGameTime;
                 while (accumulator >= TargetUpdateRate)
                 {
+                    // collect inputs
+                    Gamepad.Update(time);
+
                     Dispatcher.Update();
                     Update(time);
 
@@ -73,7 +73,7 @@ namespace EVAst3roids
                 }
 
                 Draw(time);                
-                // stopped.WaitOne(_refreshRate);
+                stopped.WaitOne(_refreshRate);
             }
         }
 

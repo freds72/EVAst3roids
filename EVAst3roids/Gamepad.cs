@@ -26,6 +26,7 @@ namespace EVAst3roids
         bool _enterButtonPressed = false;
 
         public int PressDuration { get { return _touchDuration; } }
+        public ButtonEvents Buttons { get { return _buttons; } }
 
         public Gamepad()
         {
@@ -67,14 +68,14 @@ namespace EVAst3roids
             _wasPressed = isPressed;
         }
 
-        public void Update(int dt)
+        public void Update(GameTime gameTime)
         {
             if ( _motorA != null )
                 _angle = -_motorA.GetTachoCount();
             if (_touch != null)
-                UpdatePressedState(dt, _touch.IsPressed());
+                UpdatePressedState(gameTime.ElapsedGameTime, _touch.IsPressed());
             else
-                UpdatePressedState(dt, _enterButtonPressed);
+                UpdatePressedState(gameTime.ElapsedGameTime, _enterButtonPressed);
 
             if (_rightPressed)
                 _angle--;

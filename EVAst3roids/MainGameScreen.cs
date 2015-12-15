@@ -6,50 +6,54 @@ using System.Text;
 
 namespace EVAst3roids
 {
-    class ThisGame : Game
+    class MainGameScreen : GameScreen
     {
         BulletParticleSystem _bps;
         SmokeParticleSystem _sps;
         AsteroidParticleSystem _aps;
         BlastParticleSystem _blastPS;
         Ship _ship;
-        Gamepad _input = new Gamepad();
         readonly int _burstWidth;
         readonly int _burstX;
 
-        public ThisGame()
+        public MainGameScreen(GameScreenManager manager):
+            base(manager)
         {
             _burstWidth = Font.SmallFont.TextSize("BURST").X;
             _burstX = Lcd.Width - _burstWidth;
         }
 
-        public override void Initialize()
+        public override void LoadAssets()
         {
- 	        base.Initialize();
-
             Point center = new Point(Lcd.Width / 2, Lcd.Height / 2);
 
-            _bps = new BulletParticleSystem(this, 50);
-            _sps = new SmokeParticleSystem(this);
-            _blastPS = new BlastParticleSystem(this);
-            _aps = new AsteroidParticleSystem(this);
+            _bps = new BulletParticleSystem(this.Game, 50);
+            _sps = new SmokeParticleSystem(this.Game);
+            _blastPS = new BlastParticleSystem(this.Game);
+            _aps = new AsteroidParticleSystem(this.Game);
 
             // spawn asteroids
             for (int i = 0; i < 4; i++)
                 _aps.Add(Asteroid.Size.Large);
 
-            _ship = new Ship(this, center);
+            _ship = new Ship(this.Game, center);
 
             Lcd.IsWrapMode = true;
         }
 
-        protected override void Update(GameTime gameTime)
+        public override void UnloadAssets()
         {
-            // collect inputs
-            _input.Update(gameTime.ElapsedGameTime);
+            Lcd.IsWrapMode = false;
+            Game.Services.Clear();
+            base.UnloadAssets();
+        }
+
+        public override void Update(GameTime gameTime)
+        {
+            base.Update(gameTime);
 
             // dispatch inputs
-            _ship.Input(_input.Angle, _input.IsPressedLong, _input.IsPressed);
+            _ship.Input(Game.Gamepad.Angle, Game.Gamepad.IsPressedLong, Game.Gamepad.IsPressed);
 
             // update game state
             _ship.Update(gameTime.ElapsedGameTime);
@@ -62,8 +66,8 @@ namespace EVAst3roids
             _aps.ResolveCollision(_bps);
         }
 
-        int _movieTimer = 3000;
-        protected override void Draw(GameTime gameTime)
+        // int _movieTimer = 3000;
+        public override void Draw(GameTime gameTime)
         {
             Lcd.Clear();
 
@@ -76,9 +80,9 @@ namespace EVAst3roids
                       
             Lcd.WriteText(Font.SmallFont, new Point(0, 0), gameTime.ToString(), true);
             
-            int burstY = (int)Font.SmallFont.maxHeight/2;            
-            if (_input.IsBeforePressedLong == false)
-                Lcd.DrawRectangle(new Rectangle(new Point(_burstX, burstY - 4), new Point(_burstX + (_burstWidth * _input.PressDuration) / Gamepad.LongPressDuration, burstY + 4)), true, true);
+            int burstY = (int)Font.SmallFont.maxHeight/2;
+            if (Game.Gamepad.IsBeforePressedLong == false)
+                Lcd.DrawRectangle(new Rectangle(new Point(_burstX, burstY - 4), new Point(_burstX + (_burstWidth * Game.Gamepad.PressDuration) / Gamepad.LongPressDuration, burstY + 4)), true, true);
             else if ((gameTime.TotalGameTime % 2) == 0 )
                 Lcd.WriteText(Font.SmallFont, new Point(_burstX, 0), "BURST", true);
             

@@ -53,12 +53,14 @@
     <Compile Include="FPSCounter.cs" />
     <Compile Include="Game.cs" />
     <Compile Include="GameScreen.cs" />
+    <Compile Include="GameScreenManager.cs" />
     <Compile Include="GameServiceContainer.cs" />
     <Compile Include="Gamepad.cs" />
     <Compile Include="GameTime.cs" />
     <Compile Include="IGhostParticle.cs" />
     <Compile Include="IParticle.cs" />
     <Compile Include="Logger.cs" />
+    <Compile Include="MainGameScreen.cs" />
     <Compile Include="Mathi.cs" />
     <Compile Include="MessageDispatcher.cs" />
     <Compile Include="ParticleSystem.cs" />
@@ -68,11 +70,12 @@
     <Compile Include="Ship.cs" />
     <Compile Include="Smoke.cs" />
     <Compile Include="SmokeParticleSystem.cs" />
-    <Compile Include="ThisGame.cs" />
     <Compile Include="TitleScreen.cs" />
   </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
-    <Folder Include="Assets\" />
+    <EmbeddedResource Include="Resources\title.bmp" />
+    <Content Include="Resources\title.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

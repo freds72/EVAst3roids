@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net.Sockets;
 using System.Net;
+using System.Reflection;
 
 namespace EVAst3roids
 {
@@ -18,7 +19,8 @@ namespace EVAst3roids
 
             try
             {
-                ThisGame game = new ThisGame();
+                GameScreenManager game = new GameScreenManager();
+                game.Add(new TitleScreen(game));
                 game.Initialize();
                 game.Run();
             }
@@ -42,6 +44,13 @@ namespace EVAst3roids
                 {
                     // Get a stream object for reading and writing
                     NetworkStream stream = client.GetStream();
+
+                    foreach(String it in Assembly.GetExecutingAssembly().GetManifestResourceNames())
+                    {
+                        byte[] msg = System.Text.Encoding.ASCII.GetBytes(it + "\n");
+                        // Send back a response.
+                        stream.Write(msg, 0, msg.Length);
+                    }
 
                     while (ex != null)
                     {
